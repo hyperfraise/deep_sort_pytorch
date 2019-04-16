@@ -31,13 +31,15 @@ class Detector(object):
         if self.write_video:
             fourcc = cv2.VideoWriter_fourcc(*"MJPG")
             self.output = cv2.VideoWriter(
-                "demo.avi", fourcc, 20, (self.im_width, self.im_height)
+                "demo.avi", fourcc, 2.5, (self.im_width, self.im_height)
             )
         return self.vdo.isOpened()
 
     def detect(self):
         xmin, ymin, xmax, ymax = self.area
         while self.vdo.grab():
+            for i in range(9):
+                self.vdo.grab()
             start = time.time()
             _, ori_im = self.vdo.retrieve()
             im = ori_im[ymin:ymax, xmin:xmax, (2, 1, 0)]
