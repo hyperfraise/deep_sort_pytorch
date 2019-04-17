@@ -7,11 +7,28 @@ from deep_sort import DeepSort
 from util import COLORS_10, draw_bboxes
 
 import time
-from algorithmes.common.pipeline import threadTask, StoppableThread
 import configargparse
 from yolo_utils import get_all_boxes, nms, plot_boxes_cv2
-from algorithmes.common.loading import read_file_fps
 import json
+from ffprobe3 import FFProbe
+import threading
+
+
+def read_file_fps(path: str):
+    metadata = FFProbe(path)
+
+    if path.endswith(".dav"):  # FFmpeg seems to fail on ".dav" files
+        return 25.0
+    elif (
+        path.endswith(".avi") and "Bio_Hauteville_19_11" in path
+    ):  # Data from Hauteville seems to always have a fps at 5
+        return 5.0
+
+    fps = None
+    for stream in metadata.streams:
+        if stream.is_video():
+            fps = eval(stream.__dict__["r_frame_rate"])
+    return fps
 
 
 def parse_args(args):
@@ -29,9 +46,9 @@ def parse_args(args):
     return parser.parse_args(args)
 
 
-class loading(StoppableThread):
+class loading(threading.Thread):
     def __init__(self, **kwargs):
-        StoppableThread.__init__(self)
+        threading.Thread.__init__(self)
         self.__dict__.update(**kwargs)
         self.is_opened = False
         self.vdo = cv2.VideoCapture()
@@ -93,9 +110,9 @@ class loading(StoppableThread):
         self.area = 0, 0, self.im_width, self.im_height
 
 
-class Detector(StoppableThread):
+class Detector(threading.Thread):
     def __init__(self, **kwargs):
-        StoppableThread.__init__(self)
+        threading.Thread.__init__(self)
         self.__dict__.update(**kwargs)
         self.yolo3 = YOLO3(
             "YOLO3/cfg/yolo_v3.cfg",
@@ -200,8 +217,7 @@ if __name__ == "__main__":
     print(config)
     videos = os.listdir(config.videos_path)
     model_queue = []
-    det = threadTask(
-        Detector,
+    det = Detector(
         model_queue=model_queue,
         half=config.half,
         batch_size=batch_size,
@@ -209,16 +225,18 @@ if __name__ == "__main__":
         write_videos=config.write_videos,
         write_jsons=config.write_jsons,
     )
-    loading_thread = threadTask(
-        loading,
+    det.start()
+
+    loading_thread = loading(
         model_queue=model_queue,
         batch_size=batch_size,
-        size=det.task.yolo3.size,
+        size=det.yolo3.size,
         half=config.half,
         videos=videos,
         videos_path=config.videos_path,
         fps_target=config.fps_target,
     )
+    loading_thread.start()
 
     start = time.time()
     old_value = 0
@@ -226,7 +244,7 @@ if __name__ == "__main__":
         time.sleep(10)
 
         end = time.time()
-        new_value = det.task.counter
+        new_value = det.counter
         print(
             "time: {}s, fps: {}".format(
                 end - start, (new_value - old_value) / (end - start)
