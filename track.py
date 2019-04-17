@@ -28,11 +28,8 @@ def read_file_fps(path: str):
 
 
 def parse_args(args):
-    parser = configargparse.ArgumentParser(
-        default_config_files=[""], auto_env_var_prefix="veesion_"
-    )
+    parser = configargparse.ArgumentParser(description="Tracking")
     parser.add_argument("--batch_size", "-bs", type=int, default=32)
-
     parser.add_argument("-half", action="store_true", help="FP16 inference")
     parser.add_argument("-path", "--videos_path", type=str)
     parser.add_argument("-opath", "--output_path", type=str, default="")
