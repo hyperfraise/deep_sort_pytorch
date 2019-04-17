@@ -1,6 +1,7 @@
 # Deep Sort with PyTorch
 
 This repo allows you to easily extract all tracking results from a directory of videos.
+It is a modification of this one https://github.com/ZQPei/deep_sort_pytorch. It also adds half precision inference, batch inference (though the latter doesn't improve speed on my machine).
 
 Usage :
 
@@ -16,4 +17,3 @@ python3 track.py -h
   -wj WRITE_JSONS, --write_jsons WRITE_JSONS                                                          │
 ```
 
-This code is a modification of this one https://github.com/ZQPei/deep_sort_pytorch
