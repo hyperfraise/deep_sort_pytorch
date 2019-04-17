@@ -19,10 +19,6 @@ def read_file_fps(path: str):
 
     if path.endswith(".dav"):  # FFmpeg seems to fail on ".dav" files
         return 25.0
-    elif (
-        path.endswith(".avi") and "Bio_Hauteville_19_11" in path
-    ):  # Data from Hauteville seems to always have a fps at 5
-        return 5.0
 
     fps = None
     for stream in metadata.streams:
