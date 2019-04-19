@@ -185,8 +185,8 @@ class Detector(threading.Thread):
                             )
 
                         if self.write_jsons:
-                            for i, box in enumerate(bbox_xyxy):
-                                track_id = int(identities[i])
+                            for k, box in enumerate(bbox_xyxy):
+                                track_id = int(identities[k])
                                 # x1, y1, x2, y2 = box
                                 box[0] += xmin
                                 box[2] += xmin
