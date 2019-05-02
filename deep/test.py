@@ -34,7 +34,7 @@ transform = torchvision.transforms.Compose(
     ]
 )
 queryloader = torch.utils.data.DataLoader(
-    torchvision.datasets.ImageFolder(query_dir + "/", transform=transform),
+    torchvision.datasets.ImageFolder(query_dir, transform=transform),
     batch_size=64,
     shuffle=False,
 )
