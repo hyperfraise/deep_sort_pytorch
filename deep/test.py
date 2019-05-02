@@ -33,11 +33,14 @@ transform = torchvision.transforms.Compose(
         torchvision.transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
     ]
 )
+
+print("looking for data in " + query_dir)
 queryloader = torch.utils.data.DataLoader(
     torchvision.datasets.ImageFolder(query_dir, transform=transform),
     batch_size=64,
     shuffle=False,
 )
+print("looking for data in " + gallery_dir)
 galleryloader = torch.utils.data.DataLoader(
     torchvision.datasets.ImageFolder(gallery_dir, transform=transform),
     batch_size=64,
