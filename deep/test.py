@@ -25,6 +25,7 @@ if torch.cuda.is_available() and not args.no_cuda:
 # data loader
 root = args.data_dir
 query_dir = os.path.join(root, "query")
+print(query_dir, os.listdir(query_dir))
 gallery_dir = os.path.join(root, "gallery")
 transform = torchvision.transforms.Compose(
     [
